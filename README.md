@@ -93,6 +93,11 @@ install()
 ```
 Con eso es suficiente, cada vez que se levante un error, el traceback se imprimirá de una forma muy bonita
 
+Cuando usamos un bloque `try`-`except`, al capturar la excepción, podríamos imprimir el traceback sin la necesidad de interrumpir el programa con el siguiente instrucción:
+
+```python
+console.print_exception(show_locals=True)
+```
 
 ## Exportar el output
 Se puede exportar todo la salida que resultó de ejecutar el programa e imprimir por la consola.
@@ -109,10 +114,82 @@ console.save_html("output.html")
 Y después guardar toda la salida en algún archivo con el método `console.save_html`
 
 ## Tablas
-## Markdown
-## Barra de Progreso
+Para desplegar información en tablas, se construyen con el objeto `rich.table.Table`, el cual se debe instanciar, agregar una a una las columnas, para posterior agregar una a una los renglones, como sigue:
 
-## Referencias
+```python
+from rich.table import Table
+
+# Instanciamos el objeto tabla. Agregamos un titulo y una lista.
+table = Table(title="Lista de compras", title_style="bold cyan")
+
+# Agregamos columnas, su nombre, el estilo del titulo de la columna y 
+# estilo de los elementos de la columna
+table.add_column("Producto", header_style="bold green", style="green")
+table.add_column("Categoría", header_style="bold magenta", style="magenta", justify="center")
+table.add_column("Precio", header_style="bold blue", style="blue", justify="right")
+
+# Agregamos renglones con los elementos correspondientes de cada columna.
+# Adiccionalmente se puede sobreescribir el estilo.
+table.add_row("Manzanas", "Frutas", "$52.00")
+table.add_row("Plátano macho frito", "Botanas", "$25.60", style="bold yellow")
+table.add_row("Vino tinto del Valle de Guadalupe", "Vinos y Destilados", "$159.00", end_section=True)
+
+table.add_section()
+
+table.add_row("Galletas de chocolate", "Dulces", "$24.50")
+table.add_row("Pan de muerto", "Panaderia", "$15.00")
+
+console.print(table)
+```
+## Markdown
+Se puede escribir Markdown básico para que sea desplegado en la consola. No despliega tablas ni LaTeX. Por lo que solo mostrará formato muy sencillo.
+
+Debemos importar la siguiente clase:
+```python
+from rich.markdown import Markdown
+
+documento = """
+# Documentos en formato Markdown
+* Listas
+Y además acepta [hipervinculos](https://www.google.com)
+"""
+```
+Debemos instanciar un objeto tipo Markdown con el string antes definido:
+
+```python
+md = Markdown(documento)
+console.print(md)
+```
+
+## Barra de Progreso
+También es posible agregar una barra de progreso sencilla:
+
+```python
+from rich.progress import track
+
+for i in track(range(15), console=console, description="Descargando..."):
+    time.sleep(0.25)
+
+```
+## Inspector de Objetos
+Es posible inspeccionar objetos, esto es, que valores tiene sus atributos y que metodos continen, y desplegarlos de una forma sencilla y bien formateada:
+
+```python
+from rich import inspect
+inspect(objeto, methods=True)
+```
+
+## Mensaje de estatus
+Podemos imprimir un mensaje de que se está realizando alguna tarea, con una animación de que se está trabajando en algo. Se puede personalizar con el spinner (animación) favorita. Esto se realiza dentro de un bloque with y el objeto `Console.status`
+
+```python
+with console.status("[bold green]Working on tasks...", spinner="arrow3") as status:
+    for i in range(10):
+        console.log(f"El proceso {i} inicializó.")
+        time.sleep(0.75)
+```
+
+# Referencias
 * Documentación Oficial de [Rich](https://rich.readthedocs.io/en/stable/introduction.html).
 * Repositorio en GitHub del [proyecto](https://github.com/Textualize/rich).
 * [Supertutorial](https://www.youtube.com/watch?v=4zbehnz-8QU) en Youtube sobre Rich.
